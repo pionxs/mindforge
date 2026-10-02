@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MindForge | Build Better Habits</title>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #131b2e;
+  --panel2: #19243a;
+  --text: #edf2ff;
+  --muted: #9ba9c3;
+  --accent: #83e1bd;
+  --blue: #8bb9ff;
+  --border: #293650;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.container {
+  width: min(1100px, 100%);
+  margin: auto;
+  padding: 24px;
+}
+
+/* HEADER */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 0 30px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: var(--accent);
+}
+
+.date {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* HERO */
+
+.hero {
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #172c3c, #15182d 65%);
+}
+
+.eyebrow {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.15;
+  margin: 12px 0;
+}
+
+p {
+  color: var(--muted);
+}
+
+.hero p {
+  max-width: 600px;
+}
+
+/* PROGRESS */
+
+.progress-track {
+  height: 8px;
+  background: var(--panel2);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+
+/* STATS */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0 30px;
+}
+
+.stat,
+.card,
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 26px;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* TOOLBAR */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 28px 0 18px;
+}
+
+.toolbar button,
+.reset,
+.habit-button,
+.auth-button {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 15px;
+  min-height: 44px;
+}
+
+.toolbar button.active {
+  background: var(--accent);
+  color: #10251e;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.search {
+  flex: 1;
+  min-width: 170px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.search::placeholder {
+  color: var(--muted);
+}
+
+/* SECTIONS */
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 14px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.section-heading span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* HABITS */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.emoji {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--panel2);
+  font-size: 23px;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tag {
+  font-size: 11px;
+  color: var(--blue);
+}
+
+.card p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.benefit {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.habit-button {
+  margin-top: auto;
+  width: 100%;
+  font-size: 13px;
+  text-align: center;
+}
+
+.habit-button.done {
+  background: #173a32;
+  color: var(--accent);
+  border-color: #34785f;
+}
+
+.habit-button:active,
+.toolbar button:active,
+.reset:active,
+.auth-button:active {
+  transform: scale(.98);
+}
+
+/* AUTH */
+
+.auth-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-input {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.auth-input:focus,
+.search:focus,
+textarea:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.auth-button {
+  flex: 1;
+}
+
+.auth-message {
+  min-height: 24px;
+  margin: 4px 0 0;
+}
+
+/* SYNC */
+
+.sync-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 6px;
+}
+
+.sync-offline {
+  background: #ffb8b8;
+}
+
+/* REFLECTION */
+
+.panel {
+  margin-top: 28px;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.reset {
+  color: #ffb8b8;
+  margin-top: 8px;
+}
+
+/* FOOTER */
+
+footer {
+  text-align: center;
+  padding: 35px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* TABLET */
+
+@media (max-width: 800px) {
+
+  .container {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 26px;
+  }
+}
+
+/* PHONE */
+
+@media (max-width: 600px) {
+
+  body {
+    font-size: 15px;
+  }
+
+  .container {
+    padding: 12px;
+  }
+
+  header {
+    padding: 12px 4px 20px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .date {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .hero {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 14px 0 22px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+  }
+
+  .stat strong {
+    font-size: 22px;
+  }
+
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .toolbar button {
+    width: 100%;
+  }
+
+  .search {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .habit-button {
+    min-height: 48px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+  }
+
+  .auth-button {
+    width: 100%;
+  }
+
+  textarea {
+    min-height: 140px;
+  }
+
+  .reset {
+    width: 100%;
+    min-height: 46px;
+  }
+}
+
+/* VERY SMALL PHONES */
+
+@media (max-width: 380px) {
+
+  .container {
+    padding: 9px;
+  }
+
+  .hero {
+    padding: 17px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar button {
+    width: 100%;
+  }
+}
+
+/* REDUCE MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="logo">MIND<span>FORGE</span> 🧠</div>
+    <div class="date" id="today"></div>
+  </header>
+
+
+  <!-- ACCOUNT / SYNC -->
+
+  <section class="panel" id="authPanel">
+
+    <div class="eyebrow">Cloud Sync</div>
+
+    <h2>Sync MindForge</h2>
+
+    <p>
+      Create an account so your habits, progress and reflection
+      can synchronize between your laptop and phone.
+    </p>
+
+    <div class="auth-box">
+
+      <input
+        class="auth-input"
+        id="email"
+        type="email"
+        placeholder="Email"
+        autocomplete="email"
+      >
+
+      <input
+        class="auth-input"
+        id="password"
+        type="password"
+        placeholder="Password"
+        autocomplete="current-password"
+      >
+
+      <div class="auth-buttons">
+
+        <button class="auth-button" id="signUp">
+          Create account
+        </button>
+
+        <button class="auth-button" id="signIn">
+          Sign in
+        </button>
+
+      </div>
+
+      <p
+        class="auth-message"
+        id="authMessage"
+        aria-live="polite"
+      ></p>
+
+    </div>
+
+  </section>
+
+
+  <!-- LOGGED IN USER -->
+
+  <section class="panel hidden" id="userPanel">
+
+    <div class="eyebrow">Cloud Sync</div>
+
+    <h2 id="userEmail"></h2>
+
+    <p id="syncStatus">
+      <span class="sync-dot"></span>
+      Connecting...
+    </p>
+
+    <button class="reset" id="signOut">
+      Sign out
+    </button>
+
+  </section>
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="eyebrow">
+      Your personal growth system
+    </div>
+
+    <h1>
+      Build a sharper mind.<br>
+      One day at a time.
+    </h1>
+
+    <p>
+      Twenty small habits for better thinking, learning,
+      health, and focus. You don't need perfection.
+      You need consistency.
+    </p>
+
+    <div class="progress-track">
+      <div
+        class="progress-fill"
+        id="mainProgress"
+      ></div>
+    </div>
+
+    <p id="progressLabel">
+      0 of 20 habits completed today
+    </p>
+
+  </section>
+
+
+  <!-- STATS -->
+
+  <section class="stats">
+
+    <div class="stat">
+      <strong id="completedCount">0/20</strong>
+      <span>Completed today</span>
+    </div>
+
+    <div class="stat">
+      <strong id="percentCount">0%</strong>
+      <span>Daily progress</span>
+    </div>
+
+    <div class="stat">
+      <strong id="streakCount">0</strong>
+      <span>Active days in a row</span>
+    </div>
+
+  </section>
+
+
+  <!-- FILTERS -->
+
+  <div class="toolbar" aria-label="Habit filters">
+
+    <button
+      class="active"
+      data-filter="all"
+    >
+      All habits
+    </button>
+
+    <button data-filter="laptop">
+      💻 Laptop
+    </button>
+
+    <button data-filter="life">
+      🌍 Real life
+    </button>
+
+    <input
+      class="search"
+      id="search"
+      placeholder="Search habits..."
+      aria-label="Search habits"
+    >
+
+  </div>
+
+
+  <!-- HABITS -->
+
+  <div id="habitSections"></div>
+
+
+  <!-- REFLECTION -->
+
+  <section class="panel">
+
+    <div class="eyebrow">
+      Daily reflection
+    </div>
+
+    <h2>
+      Think about your day
+    </h2>
+
+    <p>
+      Write one thing you learned, one thing you did well,
+      and one thing to improve tomorrow.
+    </p>
+
+    <textarea
+      id="reflection"
+      rows="5"
+      placeholder="Today I learned..."
+    ></textarea>
+
+    <p
+      id="savedMessage"
+      aria-live="polite"
+    >
+      Sign in to save your reflection to the cloud.
+    </p>
+
+    <button
+      class="reset"
+      id="resetDay"
+    >
+      Reset today's checklist
+    </button>
+
+  </section>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+    MIND FORGE · Small actions. Long-term growth.
+    <br>
+    Your progress is synchronized across your devices.
+  </footer>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONFIGURATION
+   =========================================================
+
+   REPLACE THESE TWO VALUES WITH YOUR SUPABASE VALUES.
+
+   IMPORTANT:
+   Use your PUBLIC/PUBLISHABLE key.
+   NEVER put a service_role key here.
+========================================================= */
+
+const SUPABASE_URL =
+  "https://tjzxkfuoczxgueefcbym.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_ATPqiSPNJPVYO028Q2FyRA_BhL_E0y6";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   HABITS
+========================================================= */
+
+const habits = [
+
+  /* LAPTOP */
+
+  {
+    id: 1,
+    group: "laptop",
+    emoji: "📝",
+    title: "Second Brain Dump",
+    time: "5 minutes",
+    description:
+      "Write what you learned, noticed, or wondered about today.",
+    benefit:
+      "Reflection · Organizing thoughts"
+  },
+
+  {
+    id: 2,
+    group: "laptop",
+    emoji: "💻",
+    title: "Code Something Small",
+    time: "15 minutes",
+    description:
+      "Build a tiny JavaScript project. Try solving problems before looking up solutions.",
+    benefit:
+      "Logic · Problem-solving"
+  },
+
+  {
+    id: 3,
+    group: "laptop",
+    emoji: "🎓",
+    title: "Feynman File",
+    time: "5 minutes",
+    description:
+      "Explain a difficult topic in simple words, as if teaching a younger student.",
+    benefit:
+      "Understanding · Communication"
+  },
+
+  {
+    id: 4,
+    group: "laptop",
+    emoji: "🔍",
+    title: "Analyze One Mistake",
+    time: "3 minutes",
+    description:
+      "Write what you expected, what happened, and what you learned.",
+    benefit:
+      "Reasoning · Learning from errors"
+  },
+
+  {
+    id: 5,
+    group: "laptop",
+    emoji: "❓",
+    title: "Ask Three Questions",
+    time: "5 minutes",
+    description:
+      "Ask why something works, how we know, and what could change the result.",
+    benefit:
+      "Critical thinking · Curiosity"
+  },
+
+  {
+    id: 6,
+    group: "laptop",
+    emoji: "🎯",
+    title: "One Tab at a Time",
+    time: "15–25 minutes",
+    description:
+      "Focus on one task and keep unrelated tabs closed during your session.",
+    benefit:
+      "Attention · Focus"
+  },
+
+  {
+    id: 7,
+    group: "laptop",
+    emoji: "🌐",
+    title: "Curiosity Rabbit Hole",
+    time: "10 minutes",
+    description:
+      "Research a question using two credible sources and summarize the answer.",
+    benefit:
+      "Research · Source evaluation"
+  },
+
+  {
+    id: 8,
+    group: "laptop",
+    emoji: "🧠",
+    title: "Recall Flashcards",
+    time: "5 minutes",
+    description:
+      "Test yourself on previously learned material, especially questions you missed.",
+    benefit:
+      "Recall · Long-term learning"
+  },
+
+  {
+    id: 9,
+    group: "laptop",
+    emoji: "🔮",
+    title: "Prediction Log",
+    time: "3 minutes",
+    description:
+      "Predict an answer before checking it. Compare your prediction with the evidence.",
+    benefit:
+      "Reasoning · Accuracy"
+  },
+
+  {
+    id: 10,
+    group: "laptop",
+    emoji: "🚶",
+    title: "Screen Break",
+    time: "A few minutes regularly",
+    description:
+      "During long sessions, look into the distance, stand up, stretch, and walk.",
+    benefit:
+      "Movement · Eye comfort"
+  },
+
+
+  /* LIFE */
+
+  {
+    id: 11,
+    group: "life",
+    emoji: "👀",
+    title: "Observation Walk",
+    time: "10 minutes",
+    description:
+      "Notice five details you normally overlook while walking safely.",
+    benefit:
+      "Attention · Observation"
+  },
+
+  {
+    id: 12,
+    group: "life",
+    emoji: "🗓️",
+    title: "Replay Your Day",
+    time: "3 minutes",
+    description:
+      "Recall the day's events in order before checking your messages or calendar.",
+    benefit:
+      "Memory · Recall"
+  },
+
+  {
+    id: 13,
+    group: "life",
+    emoji: "📚",
+    title: "Read Outside Your Interests",
+    time: "10 minutes",
+    description:
+      "Explore a topic outside your usual subjects and connect it to something you know.",
+    benefit:
+      "Creativity · Flexible thinking"
+  },
+
+  {
+    id: 14,
+    group: "life",
+    emoji: "🧩",
+    title: "Daily Challenge",
+    time: "5 minutes",
+    description:
+      "Solve a puzzle, learn a new word, or work through a useful problem independently.",
+    benefit:
+      "Persistence · Independence"
+  },
+
+  {
+    id: 15,
+    group: "life",
+    emoji: "🌿",
+    title: "Deliberate Boredom",
+    time: "5 minutes",
+    description:
+      "Sit comfortably without your phone or other entertainment and let your mind wander.",
+    benefit:
+      "Reflection · Awareness"
+  },
+
+  {
+    id: 16,
+    group: "life",
+    emoji: "🗣️",
+    title: "Teach Someone",
+    time: "5 minutes",
+    description:
+      "Explain one thing you learned to a friend or family member and answer their questions.",
+    benefit:
+      "Communication · Understanding"
+  },
+
+  {
+    id: 17,
+    group: "life",
+    emoji: "🚶‍♂️",
+    title: "Daily Movement",
+    time: "10–15 minutes to start",
+    description:
+      "Take a comfortable walk or enjoy another physical activity you like.",
+    benefit:
+      "Fitness · Mood · Brain health"
+  },
+
+  {
+    id: 18,
+    group: "life",
+    emoji: "💧",
+    title: "Basic Needs Check",
+    time: "1 minute",
+    description:
+      "Check that you are drinking enough, eating varied foods, moving, and resting.",
+    benefit:
+      "Energy · General health"
+  },
+
+  {
+    id: 19,
+    group: "life",
+    emoji: "💚",
+    title: "Name Your Mental State",
+    time: "2 minutes",
+    description:
+      "Identify how you feel, what may have contributed, and what might help.",
+    benefit:
+      "Emotional awareness"
+  },
+
+  {
+    id: 20,
+    group: "life",
+    emoji: "🌙",
+    title: "Protect Your Sleep",
+    time: "Every night",
+    description:
+      "Keep a reasonably consistent schedule and aim for 8–10 hours of sleep as a teenager.",
+    benefit:
+      "Memory · Attention · Recovery"
+  }
+
+];
+
+
+/* =========================================================
+   APP STATE
+========================================================= */
+
+const $ = id =>
+  document.getElementById(id);
+
+const localDateKey = () => {
+
+  const d = new Date();
+
+  return `${d.getFullYear()}-${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}-${String(
+    d.getDate()
+  ).padStart(2, "0")}`;
+
+};
+
+
+let state = {
+  done: [],
+  reflection: ""
+};
+
+let currentUser = null;
+let realtimeChannel = null;
+
+let filter = "all";
+let query = "";
+
+let reflectionTimer = null;
+
+
+/* =========================================================
+   UI HELPERS
+========================================================= */
+
+function setSyncStatus(message, online = true) {
+
+  const dotClass =
+    online
+      ? "sync-dot"
+      : "sync-dot sync-offline";
+
+  $("syncStatus").innerHTML =
+    `<span class="${dotClass}"></span>${message}`;
+
+}
+
+
+/* =========================================================
+   CLOUD LOAD
+========================================================= */
+
+async function loadCloudState() {
+
+  if (!currentUser) return;
+
+  setSyncStatus("Loading your data...");
+
+  const { data, error } =
+    await supabaseClient
+      .from("mindforge_days")
+      .select("done, reflection")
+      .eq("user_id", currentUser.id)
+      .eq("day", localDateKey())
+      .maybeSingle();
+
+  if (error) {
+
+    console.error(error);
+
+    setSyncStatus(
+      "Could not load cloud data.",
+      false
+    );
+
+    return;
+  }
+
+
+  if (data) {
+
+    state = {
+      done: Array.isArray(data.done)
+        ? data.done
+        : [],
+
+      reflection:
+        data.reflection || ""
+    };
+
+  } else {
+
+    state = {
+      done: [],
+      reflection: ""
+    };
+
+  }
+
+
+  $("reflection").value =
+    state.reflection || "";
+
+  $("savedMessage").textContent =
+    "✓ Your data is synced to the cloud.";
+
+  render();
+
+  setSyncStatus("Synced");
+}
+
+
+/* =========================================================
+   CLOUD SAVE
+========================================================= */
+
+async function saveCloudState() {
+
+  if (!currentUser) {
+
+    $("savedMessage").textContent =
+      "Sign in to save your data to the cloud.";
+
+    return;
+  }
+
+
+  setSyncStatus("Saving...");
+
+
+  const { error } =
+    await supabaseClient
+      .from("mindforge_days")
+      .upsert(
+        {
+          user_id: currentUser.id,
+          day: localDateKey(),
+          done: state.done,
+          reflection: state.reflection,
+          updated_at:
+            new Date().toISOString()
+        },
+        {
+          onConflict:
+            "user_id,day"
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    setSyncStatus(
+      "Could not save.",
+      false
+    );
+
+    $("savedMessage").textContent =
+      "⚠️ Cloud save failed.";
+
+    return;
+  }
+
+
+  setSyncStatus("Synced");
+
+  $("savedMessage").textContent =
+    "✓ Saved to your MindForge cloud.";
+}
+
+
+/* =========================================================
+   REALTIME SYNC
+========================================================= */
+
+function startRealtimeSync() {
+
+  if (!currentUser) return;
+
+
+  if (realtimeChannel) {
+
+    supabaseClient.removeChannel(
+      realtimeChannel
+    );
+
+  }
+
+
+  realtimeChannel =
+    supabaseClient
+      .channel(
+        "mindforge-sync-" +
+        currentUser.id
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "mindforge_days",
+          filter:
+            `user_id=eq.${currentUser.id}`
+        },
+
+        async () => {
+
+          await loadCloudState();
+
+        }
+      )
+
+      .subscribe(
+        status => {
+
+          if (status === "SUBSCRIBED") {
+
+            setSyncStatus(
+              "Live sync connected"
+            );
+
+          }
+
+        }
+      );
+}
+
+
+/* =========================================================
+   STOP REALTIME
+========================================================= */
+
+async function stopRealtimeSync() {
+
+  if (!realtimeChannel) return;
+
+  await supabaseClient.removeChannel(
+    realtimeChannel
+  );
+
+  realtimeChannel = null;
+}
+
+
+/* =========================================================
+   USER HANDLER
+========================================================= */
+
+async function handleUser(user) {
+
+  currentUser = user;
+
+  $("authPanel")
+    .classList
+    .add("hidden");
+
+  $("userPanel")
+    .classList
+    .remove("hidden");
+
+  $("userEmail")
+    .textContent =
+    user.email;
+
+
+  await loadCloudState();
+
+  startRealtimeSync();
+}
+
+
+/* =========================================================
+   SIGN UP
+========================================================= */
+
+async function signUp() {
+
+  const email =
+    $("email").value.trim();
+
+  const password =
+    $("password").value;
+
+
+  if (!email || !password) {
+
+    $("authMessage").textContent =
+      "Enter your email and password.";
+
+    return;
+  }
+
+
+  if (password.length < 6) {
+
+    $("authMessage").textContent =
+      "Password must be at least 6 characters.";
+
+    return;
+  }
+
+
+  $("authMessage").textContent =
+    "Creating account...";
+
+
+  const { data, error } =
+    await supabaseClient.auth.signUp(
+      {
+        email,
+        password
+      }
+    );
+
+
+  if (error) {
+
+    console.error(error);
+
+    $("authMessage").textContent =
+      error.message;
+
+    return;
+  }
+
+
+  if (data.session) {
+
+    $("authMessage").textContent =
+      "Account created!";
+
+    await handleUser(data.user);
+
+  } else {
+
+    $("authMessage").textContent =
+      "Account created. Check your email to confirm your account.";
+
+  }
+
+}
+
+
+/* =========================================================
+   SIGN IN
+========================================================= */
+
+async function signIn() {
+
+  const email =
+    $("email").value.trim();
+
+  const password =
+    $("password").value;
+
+
+  if (!email || !password) {
+
+    $("authMessage").textContent =
+      "Enter your email and password.";
+
+    return;
+  }
+
+
+  $("authMessage").textContent =
+    "Signing in...";
+
+
+  const { data, error } =
+    await supabaseClient.auth
+      .signInWithPassword(
+        {
+          email,
+          password
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    $("authMessage").textContent =
+      error.message;
+
+    return;
+  }
+
+
+  $("authMessage").textContent =
+    "";
+
+  await handleUser(
+    data.user
+  );
+}
+
+
+/* =========================================================
+   SIGN OUT
+========================================================= */
+
+async function signOut() {
+
+  await stopRealtimeSync();
+
+  await supabaseClient.auth.signOut();
+
+
+  currentUser = null;
+
+
+  state = {
+    done: [],
+    reflection: ""
+  };
+
+
+  $("authPanel")
+    .classList
+    .remove("hidden");
+
+  $("userPanel")
+    .classList
+    .add("hidden");
+
+
+  $("email").value = "";
+  $("password").value = "";
+
+
+  $("reflection").value = "";
+
+  $("savedMessage").textContent =
+    "Sign in to save your reflection to the cloud.";
+
+
+  render();
+}
+
+
+/* =========================================================
+   STREAK
+========================================================= */
+
+function getStreak() {
+
+  if (!currentUser) return 0;
+
+  let streak = 0;
+
+  const d = new Date();
+
+
+  const todayDone =
+    habits.every(
+      h =>
+        state.done.includes(h.id)
+    );
+
+
+  if (!todayDone) {
+
+    d.setDate(
+      d.getDate() - 1
+    );
+
+  }
+
+
+  while (true) {
+
+    const key =
+      `mindforge-day-${d.getFullYear()}-${String(
+        d.getMonth() + 1
+      ).padStart(2, "0")}-${String(
+        d.getDate()
+      ).padStart(2, "0")}`;
+
+
+    /*
+      The streak shown for a cloud account
+      is calculated from locally cached days.
+
+      The current day's streak works immediately.
+    */
+
+    let record = null;
+
+    try {
+
+      record =
+        JSON.parse(
+          localStorage.getItem(key)
+        );
+
+    } catch {
+
+      record = null;
+
+    }
+
+
+    if (
+      !record ||
+      !habits.every(
+        h =>
+          record.done.includes(h.id)
+      )
+    ) {
+
+      break;
+
+    }
+
+
+    streak++;
+
+    d.setDate(
+      d.getDate() - 1
+    );
+
+  }
+
+
+  return streak;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderStats() {
+
+  const count =
+    state.done.length;
+
+  const percent =
+    Math.round(
+      count /
+      habits.length *
+      100
+    );
+
+
+  $("completedCount")
+    .textContent =
+    `${count}/${habits.length}`;
+
+  $("percentCount")
+    .textContent =
+    percent + "%";
+
+  $("streakCount")
+    .textContent =
+    getStreak();
+
+  $("mainProgress")
+    .style
+    .width =
+    percent + "%";
+
+  $("progressLabel")
+    .textContent =
+    `${count} of ${habits.length} habits completed today`;
+}
+
+
+/* =========================================================
+   HABIT CARD
+========================================================= */
+
+function makeCard(habit) {
+
+  const done =
+    state.done.includes(
+      habit.id
+    );
+
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className = "card";
+
+
+  const top =
+    document.createElement(
+      "div"
+    );
+
+  top.className =
+    "card-top";
+
+
+  const emoji =
+    document.createElement(
+      "div"
+    );
+
+  emoji.className =
+    "emoji";
+
+  emoji.textContent =
+    habit.emoji;
+
+  emoji.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  const info =
+    document.createElement(
+      "div"
+    );
+
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+  title.textContent =
+    habit.title;
+
+
+  const tag =
+    document.createElement(
+      "div"
+    );
+
+  tag.className =
+    "tag";
+
+  tag.textContent =
+    habit.time;
+
+
+  info.append(
+    title,
+    tag
+  );
+
+  top.append(
+    emoji,
+    info
+  );
+
+
+  const description =
+    document.createElement(
+      "p"
+    );
+
+  description.textContent =
+    habit.description;
+
+
+  const benefit =
+    document.createElement(
+      "div"
+    );
+
+  benefit.className =
+    "benefit";
+
+  benefit.textContent =
+    "↗ " +
+    habit.benefit;
+
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.className =
+    "habit-button" +
+    (done ? " done" : "");
+
+
+  button.textContent =
+    done
+      ? "✓ Completed"
+      : "Mark as complete";
+
+
+  button.setAttribute(
+    "aria-pressed",
+    String(done)
+  );
+
+
+  button.addEventListener(
+    "click",
+    async () => {
+
+      if (!currentUser) {
+
+        $("authMessage").textContent =
+          "Please sign in first.";
+
+        $("authPanel")
+          .scrollIntoView({
+            behavior: "smooth"
+          });
+
+        return;
+      }
+
+
+      if (
+        state.done.includes(
+          habit.id
+        )
+      ) {
+
+        state.done =
+          state.done.filter(
+            id =>
+              id !== habit.id
+          );
+
+      } else {
+
+        state.done.push(
+          habit.id
+        );
+
+      }
+
+
+      render();
+
+      await saveCloudState();
+
+    }
+  );
+
+
+  card.append(
+    top,
+    description,
+    benefit,
+    button
+  );
+
+
+  return card;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+function renderSection(
+  title,
+  group,
+  icon
+) {
+
+  const matching =
+    habits.filter(h => {
+
+      const groupMatch =
+        group === "all" ||
+        h.group === group;
+
+
+      const searchMatch =
+        `${h.title} ${h.description} ${h.benefit}`
+          .toLowerCase()
+          .includes(
+            query.toLowerCase()
+          );
+
+
+      return (
+        groupMatch &&
+        searchMatch
+      );
+
+    });
+
+
+  if (!matching.length)
+    return null;
+
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+
+  const heading =
+    document.createElement(
+      "div"
+    );
+
+  heading.className =
+    "section-heading";
+
+
+  const h2 =
+    document.createElement(
+      "h2"
+    );
+
+  h2.textContent =
+    `${icon} ${title}`;
+
+
+  const total =
+    document.createElement(
+      "span"
+    );
+
+
+  const completed =
+    matching.filter(
+      h =>
+        state.done.includes(
+          h.id
+        )
+    ).length;
+
+
+  total.textContent =
+    `${completed}/${matching.length} complete`;
+
+
+  heading.append(
+    h2,
+    total
+  );
+
+
+  const grid =
+    document.createElement(
+      "div"
+    );
+
+  grid.className =
+    "grid";
+
+
+  matching.forEach(
+    h =>
+      grid.appendChild(
+        makeCard(h)
+      )
+  );
+
+
+  section.append(
+    heading,
+    grid
+  );
+
+
+  return section;
+}
+
+
+/* =========================================================
+   MAIN RENDER
+========================================================= */
+
+function render() {
+
+  const root =
+    $("habitSections");
+
+
+  root.replaceChildren();
+
+
+  if (
+    filter === "all" ||
+    filter === "laptop"
+  ) {
+
+    const section =
+      renderSection(
+        "Laptop Habits",
+        "laptop",
+        "💻"
+      );
+
+
+    if (section)
+      root.appendChild(
+        section
+      );
+
+  }
+
+
+  if (
+    filter === "all" ||
+    filter === "life"
+  ) {
+
+    const section =
+      renderSection(
+        "Everyday Life",
+        "life",
+        "🌍"
+      );
+
+
+    if (section)
+      root.appendChild(
+        section
+      );
+
+  }
+
+
+  if (!root.children.length) {
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+    empty.className =
+      "panel";
+
+    empty.textContent =
+      "No habits found. Try a different search.";
+
+    root.appendChild(
+      empty
+    );
+
+  }
+
+
+  renderStats();
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+$("today").textContent =
+  new Date().toLocaleDateString(
+    undefined,
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    }
+  );
+
+
+/* =========================================================
+   FILTER BUTTONS
+========================================================= */
+
+document
+  .querySelectorAll(
+    "[data-filter]"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        filter =
+          button.dataset.filter;
+
+
+        document
+          .querySelectorAll(
+            "[data-filter]"
+          )
+          .forEach(b => {
+
+            b.classList.toggle(
+              "active",
+              b === button
+            );
+
+          });
+
+
+        render();
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+$("search")
+  .addEventListener(
+    "input",
+    event => {
+
+      query =
+        event.target.value;
+
+      render();
+
+    }
+  );
+
+
+/* =========================================================
+   REFLECTION
+========================================================= */
+
+$("reflection")
+  .addEventListener(
+    "input",
+    event => {
+
+      state.reflection =
+        event.target.value;
+
+
+      clearTimeout(
+        reflectionTimer
+      );
+
+
+      reflectionTimer =
+        setTimeout(
+          () => {
+
+            saveCloudState();
+
+          },
+          700
+        );
+
+    }
+  );
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+$("resetDay")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !confirm(
+          "Reset today's completed habits and reflection?"
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      state = {
+        done: [],
+        reflection: ""
+      };
+
+
+      $("reflection")
+        .value = "";
+
+
+      render();
+
+
+      await saveCloudState();
+
+    }
+  );
+
+
+/* =========================================================
+   AUTH BUTTONS
+========================================================= */
+
+$("signUp")
+  .addEventListener(
+    "click",
+    signUp
+  );
+
+
+$("signIn")
+  .addEventListener(
+    "click",
+    signIn
+  );
+
+
+$("signOut")
+  .addEventListener(
+    "click",
+    signOut
+  );
+
+
+/* =========================================================
+   ENTER KEY LOGIN
+========================================================= */
+
+$("password")
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        signIn();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+async function initializeApp() {
+
+  render();
+
+
+  if (
+    SUPABASE_URL.includes(
+      "YOUR_SUPABASE"
+    )
+  ) {
+
+    $("authMessage").textContent =
+      "Connect Supabase to enable cloud synchronization.";
+
+    return;
+  }
+
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  if (
+    session &&
+    session.user
+  ) {
+
+    await handleUser(
+      session.user
+    );
+
+  }
+
+}
+
+
+initializeApp();
+
+</script>
+
+</body>
+</html>
